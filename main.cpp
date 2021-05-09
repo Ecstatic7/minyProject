@@ -1,9 +1,13 @@
 #include <iostream>
 using namespace std;
-
+struct Synonyms{
+    string synonym;
+    Synonyms * next;
+};
 struct Word{
     string name;
-    Word * next;
+    Word * nextWord;
+    Synonyms * nextSyn;
 };
 
 int main() {
