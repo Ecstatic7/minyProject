@@ -30,6 +30,7 @@ int main() {
     Word * wordHead = nullptr;
 
     addWord(wordHead);
+    addWord(wordHead);
 
     Word * headTemp = wordHead;
 
@@ -69,10 +70,16 @@ void addWord(Word *&wordHead){
     /// add word to list
     Word *word = new Word;
     word->word = wordAndSyn.substr(start, end - start);
-
+    
     if (wordHead == nullptr)
         wordHead = word;
-
+    else{
+        Word * headTemp = wordHead;
+        while (headTemp->nextWord){
+            headTemp = headTemp->nextWord;
+        }
+        headTemp->nextWord = word;
+    }
     word->nextWord = nullptr;
 
     /// find first syn
@@ -91,20 +98,22 @@ void addWord(Word *&wordHead){
         start = end + 1;
         end = wordAndSyn.find(synDelimiter,start);
     }
+
     /// add last synonym
     Synonyms * synonym = new Synonyms;
     synonym->synonym = wordAndSyn.substr(start);
     synonym->next = temp;
+
     word->syn = synonym;
 
     /// sort Synonyms
     sortSynonyms(word);
+    sortWords(wordHead);
 }
 
 void sortSynonyms(Word * & word){
     Synonyms * temp = word->syn;
 
-    bool head = true;
     while (temp){
         Synonyms * tempPrim = temp;
         Synonyms * temp2 = temp->next;
@@ -133,7 +142,28 @@ void swapSyn(Synonyms & s1, Synonyms & s2){
 }
 
 void sortWords(Word * head){
+    Word * temp = head;
 
+    while (temp){
+        Word * tempPrim = temp;
+        Word * temp2 = temp->nextWord;
+        Word * minimum = temp;
+
+        bool isSorted = true;
+
+        while (temp2){
+            if (temp2->word < minimum->word) {
+                minimum = temp2;
+                isSorted = false;
+            }
+            temp2 = temp2->nextWord;
+        }
+
+        if (!isSorted)
+            swapWords(*tempPrim, *minimum);
+
+        temp = temp->nextWord;
+    }
 }
 
 void swapWords(Word & w1, Word & w2){
