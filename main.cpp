@@ -1,7 +1,7 @@
 #include <iostream>
-
 using namespace std;
 
+/// Structs
 struct Synonyms{
     string synonym;
     Synonyms * next;
@@ -12,9 +12,18 @@ struct Word{
     Synonyms * syn{};
 };
 
+/// functions prototype
 string getWord();
-//, Synonyms *& synHead
+
 void addWord(Word *&wordHead);
+
+void sortSynonyms(Word * &word);
+
+void swapSyn( Synonyms & , Synonyms &);
+
+void sortWords(Word * head);
+
+void swapWords( Word & , Word &);
 
 int main() {
 
@@ -29,10 +38,11 @@ int main() {
 
         Synonyms * synTemp = headTemp->syn;
         while (synTemp){
-            cout << synTemp->synonym << ", ";
+            cout << synTemp->synonym << " | ";
             synTemp = synTemp->next;
         }
         headTemp = headTemp->nextWord;
+        cout << endl;
     }
 
     return 0;
@@ -85,6 +95,50 @@ void addWord(Word *&wordHead){
     Synonyms * synonym = new Synonyms;
     synonym->synonym = wordAndSyn.substr(start);
     synonym->next = temp;
-
     word->syn = synonym;
+
+    /// sort Synonyms
+    sortSynonyms(word);
+}
+
+void sortSynonyms(Word * & word){
+    Synonyms * temp = word->syn;
+
+    bool head = true;
+    while (temp){
+        Synonyms * tempPrim = temp;
+        Synonyms * temp2 = temp->next;
+        Synonyms * minimum = temp;
+
+        bool isSort = true;
+        while (temp2){
+            if (temp2->synonym < minimum->synonym){
+                minimum = temp2;
+                isSort = false;
+            }
+            temp2 = temp2->next;
+        }
+        if (!isSort)
+            swapSyn(*tempPrim , *minimum);
+
+        temp = temp->next;
+    }
+}
+
+void swapSyn(Synonyms & s1, Synonyms & s2){
+    Synonyms temp = s1;
+
+    s1.synonym = s2.synonym;
+    s2.synonym = temp.synonym;
+}
+
+void sortWords(Word * head){
+
+}
+
+void swapWords(Word & w1, Word & w2){
+    Word temp = w1;
+
+    w1.word = w2.word;
+    w2.word = temp.word;
 }
