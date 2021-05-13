@@ -27,7 +27,15 @@ void sortWords(Word *head);
 
 void swapWords(Word &, Word &);
 
-void removeWord(Word *&word);
+void removeWord(Word *&head, Word *&word);
+
+void removeSynonym(Word *&, string);
+
+void findWord(Word *, Word *);
+
+void printWordAndSynonym(Word *);
+
+void printAllWords(Word *);
 
 int main() {
 
@@ -37,21 +45,13 @@ int main() {
     addWord(wordHead);
 
     Word *headTemp = wordHead;
+    Word *daf = wordHead;
 
-    while (headTemp) {
-        cout << headTemp->word << ":\t";
+//    findWord(headTemp,headTemp->nextWord);
+//    removeWord(headTemp,daf);
+//    removeSynonym(headTemp);
 
-        Synonyms *synTemp = headTemp->syn;
-
-        while (synTemp) {
-            cout << synTemp->synonym << " | ";
-            synTemp = synTemp->next;
-        }
-
-        headTemp = headTemp->nextWord;
-        cout << endl;
-    }
-
+    printAllWords(headTemp);
     return 0;
 }
 
@@ -113,7 +113,7 @@ void addWord(Word *&wordHead) {
 
     word->syn = synonym;
 
-    /// sort Synonyms
+    /// sort Synonyms and words;
     sortSynonyms(word);
     sortWords(wordHead);
 }
@@ -212,5 +212,67 @@ void removeWord(Word *&head, Word *& word) {
         }
         previousWord = temp;
         temp = temp->nextWord;
+    }
+}
+
+void removeSynonym(Word *& word, string syn){
+    Synonyms * head = word->syn;
+    Synonyms * previousSyn = word->syn;
+
+    int synonyms = 0;
+    bool found = false;
+
+    while (head){
+        synonyms++;
+        if (syn == head->synonym){
+            found = true;
+
+            if (syn == word->syn->synonym)
+                word->syn = word->syn->next;
+            else
+                previousSyn->next = head->next;
+
+            delete head;
+            break;
+        }
+
+        previousSyn = head;
+        head = head->next;
+    }
+    if (synonyms == 1 && found)
+        delete word;
+}
+
+void findWord(Word * head, Word * word){
+
+    bool found =false;
+    while (head){
+        if (head == word) {
+            found = true;
+            printWordAndSynonym(word);
+            break;
+        }
+        head = head->nextWord;
+    }
+    if (!found)
+        cout << "couldn't find the word!\n";
+}
+
+void printWordAndSynonym(Word * word){
+    Synonyms * head = word->syn;
+    cout << "word : " << word->word << '\t';
+
+    cout << "Synonyms: ";
+    while (head){
+        cout << head->synonym << " , ";
+        head = head->next;
+    }
+    cout << endl;
+}
+
+void printAllWords(Word * head){
+    while (head){
+        printWordAndSynonym(head);
+        head = head->nextWord;
     }
 }
