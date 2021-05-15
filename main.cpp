@@ -109,7 +109,8 @@ int main() {
                 currentWord = getWord(head, word);
                 changeDictation(currentWord ,newWord);
                 break;
-
+            case 0:
+                break;
             default:
                 cout << "invalid option\n";
                 cout << endl << repeat << endl;
