@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
 using namespace std;
 
@@ -36,13 +37,17 @@ void findWord(Word *, const string &);
 
 Word *getWord(Word *, const string &);
 
-void showWordAndSynonym(Word *);
+string showWordAndSynonym(Word *);
 
 void showAllWords(Word *);
 
 void changeDictation(Word *&,const string &);
 
 Synonyms *lastSynonym(Word *);
+
+void writeInFile(Word *);
+
+void readFromFile();
 
 string menu();
 
@@ -79,7 +84,7 @@ int main() {
                 break;
 
             case 3:
-                cout << "Enter the word :";
+                cout << "Enter the word:";
                 cin.get();
                 getline(cin, word);
                 cout << "Enter the synonym you want to remove:";
@@ -109,6 +114,10 @@ int main() {
                 currentWord = getWord(head, word);
                 changeDictation(currentWord ,newWord);
                 break;
+            case 7:
+                writeInFile(head);
+                break;
+
             case 0:
                 break;
             default:
@@ -330,8 +339,8 @@ void removeSynonym(Word *&head, const string &kalame, const string &syn) {
             else
                 previousSyn->next = synHead->next;
 
-//            synHead = nullptr;
             delete synHead;
+            synHead = nullptr;
 
             if (onlyOneSynonym)
                 removeWord(head, word->word);
@@ -369,16 +378,18 @@ Word *getWord(Word *head, const string &word) {
     return nullptr;
 }
 
-void showWordAndSynonym(Word *word) {
+string showWordAndSynonym(Word *word) {
+    ostringstream print;
     Synonyms *head = word->syn;
-    cout << "word : " << word->word << '\t';
 
-    cout << "Synonyms: ";
+    print << "word : " << word->word << '\t';
+    print << "Synonyms: ";
     while (head) {
-        cout << head->synonym << " , ";
+        print << head->synonym << " , ";
         head = head->next;
     }
-    cout << endl;
+    print << endl;
+    return print.str();
 }
 
 void showAllWords(Word *head) {
@@ -418,6 +429,18 @@ Synonyms *lastSynonym(Word *word) {
 
     return head;
 }
+
+void writeInFile(Word * head){
+    ofstream write("dictionary.txt");
+
+    Word * temp = head;
+    while (temp){
+        write << showWordAndSynonym(temp);
+        temp = temp->nextWord;
+    }
+    write.close();
+}
+
 
 
 
