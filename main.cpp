@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <vector>
 
 using namespace std;
 
@@ -47,7 +48,9 @@ Synonyms *lastSynonym(Word *);
 
 void writeInFile(Word *);
 
-void readFromFile();
+Word * readFromFile();
+
+Word * addWordsFromFile(Word *&, const string& );
 
 string menu();
 
@@ -62,6 +65,7 @@ int main() {
     string synonym;
     string newWord ;
     Word * currentWord = nullptr;
+
 
     while (option) {
 
@@ -116,6 +120,10 @@ int main() {
                 break;
             case 7:
                 writeInFile(head);
+                break;
+
+            case 8:
+                head = readFromFile();
                 break;
 
             case 0:
@@ -360,7 +368,7 @@ void findWord(Word *head, const string &word) {
     while (head) {
         if (head->word == word) {
             found = true;
-            showWordAndSynonym(head);
+            cout << showWordAndSynonym(head);
             break;
         }
         head = head->nextWord;
@@ -382,10 +390,9 @@ string showWordAndSynonym(Word *word) {
     ostringstream print;
     Synonyms *head = word->syn;
 
-    print << "word : " << word->word << '\t';
-    print << "Synonyms: ";
+    print << word->word << ' ';
     while (head) {
-        print << head->synonym << " , ";
+        print << head->synonym << ' ';
         head = head->next;
     }
     print << endl;
@@ -397,7 +404,7 @@ void showAllWords(Word *head) {
         cout << "there is no word in dictionary!\n";
     else
         while (head) {
-            showWordAndSynonym(head);
+            cout << showWordAndSynonym(head);
             head = head->nextWord;
         }
 }
@@ -439,6 +446,55 @@ void writeInFile(Word * head){
         temp = temp->nextWord;
     }
     write.close();
+}
+
+Word * readFromFile(){
+    Word * head = nullptr;
+    Word * word ;
+
+    const string fileAddress = "dictionary.txt";
+    ifstream read(fileAddress);
+
+    string nameAndSyn;
+    getline(read, nameAndSyn);
+
+    while (!read.eof()) {
+        addWordsFromFile(word, nameAndSyn);
+        word->nextWord = head;
+        head = word;
+        getline(read, nameAndSyn);
+    }
+    
+    sortWords(head);
+    return head;
+}
+
+Word * addWordsFromFile(Word *& word, const string& line) {
+
+    word = new Word;
+    stringstream nameAndSyn(line);
+    string token;
+
+    Synonyms * syn;
+    Synonyms * temp = nullptr;
+
+    bool firstTime = true;
+    while (getline(nameAndSyn , token, ' ')){
+        if (firstTime) {
+            word->word = token;
+            firstTime = false;
+        }
+        else{
+            syn = new Synonyms;
+            syn->synonym = token;
+            syn->next = temp;
+            temp = syn;
+        }
+    }
+    word->syn = syn;
+    sortSynonyms(word);
+
+    return word;
 }
 
 
